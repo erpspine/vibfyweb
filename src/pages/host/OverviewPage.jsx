@@ -1,0 +1,11 @@
+import { BadgeCheck, CalendarDays, Check, CircleDollarSign, Eye, MapPin, Plus, Store, TicketCheck } from 'lucide-react'
+import { useRouter } from '../../router'
+import { events } from '../../data/mockData'
+import { Badge, EventRow, MetricCard, SectionHeader } from '../../components/ui'
+
+export default function HostOverviewPage() {
+  const { navigate } = useRouter()
+  return <><div className="host-welcome"><div><Badge tone="green"><BadgeCheck size={13} /> Verified host</Badge><h1>Welcome back, Rafiki Garden.</h1><p>Your venue is looking great. Here’s how your experiences are performing.</p><div className="hero-actions"><button className="light-button" onClick={() => navigate('/host/events')}><Plus />Create event</button><button className="glass-button" onClick={() => navigate('/host/venues')}><Store />Edit venue</button></div></div><div className="host-score"><div className="score-ring"><strong>92</strong><span>Profile score</span></div><p><Check /> Excellent profile quality</p></div></div>
+    <div className="metrics-grid"><MetricCard icon={Eye} label="Profile views" value="12.8K" delta="18.5%" tone="purple" /><MetricCard icon={TicketCheck} label="Tickets sold" value="640" delta="12.3%" tone="pink" /><MetricCard icon={CalendarDays} label="Upcoming events" value="3" delta="1 new" tone="amber" /><MetricCard icon={CircleDollarSign} label="Event revenue" value="TSh 9.6M" delta="14.1%" tone="cyan" /></div>
+    <div className="dashboard-grid"><section className="panel"><SectionHeader title="Your events" subtitle="Upcoming and recently published" action="Manage events" onAction={() => navigate('/host/events')} /><div className="event-list">{events.map(event => <EventRow event={event} key={event.title} />)}</div></section><section className="panel insights"><SectionHeader title="Audience insights" subtitle="Who is discovering you" /><div className="insight-map"><span className="pulse one" /><span className="pulse two" /><span className="pulse three" /><MapPin size={28} /></div><div className="insight-stat"><span>Top audience location</span><strong>Arusha City · 68%</strong></div><div className="insight-stat"><span>Most popular interest</span><strong>Afrobeats · 42%</strong></div></section></div></>
+}
