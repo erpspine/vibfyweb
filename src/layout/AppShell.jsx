@@ -164,6 +164,13 @@ export default function AppShell({ children }) {
             <kbd>⌘ K</kbd>
           </div>
           <div className="top-actions">
+            <div className="live-vibe">
+              <span />
+              <div>
+                <small>Platform pulse</small>
+                <strong>Vibes are live</strong>
+              </div>
+            </div>
             {canSwitchRole && (
               <button className="role-toggle" onClick={switchRole}>
                 <span>{manager ? "Manager view" : "Host view"}</span>
@@ -199,7 +206,11 @@ export default function AppShell({ children }) {
             </div>
           </div>
         </header>
-        <div className="content">{children}</div>
+        <div className="content">
+          <span className="ambient-orb ambient-orb-one" />
+          <span className="ambient-orb ambient-orb-two" />
+          <div className="content-inner">{children}</div>
+        </div>
       </main>
     </div>
   );
