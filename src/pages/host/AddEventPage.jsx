@@ -16,6 +16,7 @@ import VenueLocationMap from "../../components/VenueLocationMap";
 import { api, apiUrl } from "../../api";
 import { useRouter } from "../../router";
 import EventLoading from "../../components/EventLoading";
+import { showFailureAlert, showSuccessToast } from "../../alerts";
 
 const eventCategories = [
   "Music", "Nightlife", "Food", "Safari", "Culture", "Sports",
@@ -183,9 +184,16 @@ export default function AddEventPage({ mode = "create" }) {
         method: "POST",
         body: payload,
       });
+      showSuccessToast(
+        editing ? "Event updated" : "Event added",
+        editing
+          ? "Your event changes have been saved."
+          : "Your new event has been added.",
+      );
       navigate("/host/events", { replace: true });
     } catch (problem) {
       setError(problem.message);
+      showFailureAlert(problem.message);
       setSaving(false);
     }
   };

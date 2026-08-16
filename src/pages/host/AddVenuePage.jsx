@@ -14,6 +14,7 @@ import { useRouter } from "../../router";
 import VenueLocationMap from "../../components/VenueLocationMap";
 import { api } from "../../api";
 import EventLoading from "../../components/EventLoading";
+import { showFailureAlert, showSuccessToast } from "../../alerts";
 
 const amenities = [
   "Outdoor",
@@ -68,7 +69,7 @@ export default function AddVenuePage({ mode = "create" }) {
     const file = event.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      window.alert("Please choose an image smaller than 2 MB.");
+      showFailureAlert("Please choose an image smaller than 2 MB.");
       event.target.value = "";
       return;
     }
@@ -102,9 +103,16 @@ export default function AddVenuePage({ mode = "create" }) {
         method: editing ? "PUT" : "POST",
         body: JSON.stringify(venue),
       });
+      showSuccessToast(
+        editing ? "Venue updated" : "Venue added",
+        editing
+          ? "Your venue changes have been saved."
+          : "Your new venue has been added.",
+      );
       navigate("/host/venues", { replace: true });
     } catch (problem) {
       setSaveError(problem.message);
+      showFailureAlert(problem.message);
       setSaving(false);
     }
   };
