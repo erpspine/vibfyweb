@@ -2,6 +2,9 @@
   display: grid;
   gap: 18px;
 }
+
+/* Vibfy SweetAlert treatment for event actions */
+.vibfy-swal{border:1px solid rgba(190,132,255,.22)!important;border-radius:25px!important;padding:24px!important;background:radial-gradient(circle at 90% 0,rgba(167,100,255,.15),transparent 38%),#17111f!important;box-shadow:0 30px 90px rgba(0,0,0,.55)!important}.vibfy-swal-title{font-family:Manrope,sans-serif!important;font-size:24px!important;letter-spacing:-.7px!important}.vibfy-swal-copy{margin-top:8px!important;color:#bdb3c6!important;font-size:13px!important;line-height:1.6!important}.vibfy-swal-copy strong{color:#fff}.vibfy-swal-copy>small{display:block;margin-top:7px;color:#7f7489}.vibfy-swal-icon{transform:scale(.82);margin-bottom:5px!important}.vibfy-swal-actions{gap:10px!important;margin-top:23px!important}.vibfy-swal-confirm,.vibfy-swal-cancel{min-height:43px!important;padding:10px 19px!important;border:0!important;border-radius:13px!important;font-size:12px!important;font-weight:750!important}.vibfy-swal-confirm{background:linear-gradient(135deg,#ac63ff,#7540e8)!important;color:#fff!important;box-shadow:0 12px 28px rgba(117,64,232,.3)!important}.vibfy-swal-cancel{background:#2b2333!important;color:#c8bdcf!important}.vibfy-swal-confirm:hover,.vibfy-swal-cancel:hover{transform:translateY(-1px)}.vibfy-alert-note{display:flex;gap:11px;align-items:center;margin-top:18px;padding:13px;text-align:left;border:1px solid rgba(167,100,255,.2);border-radius:14px;background:rgba(167,100,255,.08)}.vibfy-alert-note>span{width:35px;height:35px;display:grid;place-items:center;flex:0 0 35px;border-radius:11px;background:rgba(167,100,255,.17);color:#cfadff}.vibfy-alert-note>div{display:flex;flex-direction:column}.vibfy-alert-note b{color:#eee7f5;font-size:11px}.vibfy-alert-note small{margin-top:2px;color:#93879e;font-size:9px}.vibfy-toast{width:min(390px,calc(100vw - 30px))!important;padding:14px 17px!important;border-radius:18px!important}.vibfy-toast .swal2-title{font-size:15px!important;text-align:left!important}.vibfy-toast .swal2-html-container{font-size:11px!important;text-align:left!important}.vibfy-toast .swal2-icon{transform:scale(.72)!important;margin:0 10px 0 0!important}
 .venue-loading,
 .venue-empty {
   text-align: center;
@@ -307,6 +310,8 @@
   opacity: 0.5;
   cursor: wait;
 }
+
+.ad-application{display:grid;grid-template-columns:130px 1fr auto;gap:20px;align-items:center;padding:18px 0;border-top:1px solid var(--line)}.ad-application:first-child{border-top:0}.ad-application>img{width:130px;height:92px;object-fit:cover;border-radius:16px}.ad-application-copy h2{font-size:16px;margin:9px 0 5px}.ad-application-copy p,.ad-application-copy small{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px}.ad-application-copy svg{width:13px}.ad-application-copy blockquote{margin:10px 0 0;padding:9px 12px;border-left:2px solid var(--purple);background:rgba(167,100,255,.07);font-size:10px;color:#cfc6d5}.ad-review-actions{display:flex;gap:9px}.ad-review-actions button{display:flex;align-items:center;gap:6px}.ad-review-actions svg{width:15px}@media(max-width:800px){.ad-application{grid-template-columns:90px 1fr}.ad-application>img{width:90px;height:80px}.ad-review-actions{grid-column:1/-1;justify-content:flex-end}}
 .event-card-actions {
   display: flex !important;
   gap: 6px;

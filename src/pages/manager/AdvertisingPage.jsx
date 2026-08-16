@@ -1,4 +1,69 @@
-import { Activity, Eye, Megaphone, MoreHorizontal, Plus, TicketCheck } from 'lucide-react'
-import { Badge, MetricCard, PageHeading, SectionHeader } from '../../components/ui'
+import { useEffect, useState } from "react";
+import { CheckCircle2, Clock3, Megaphone, MapPin, XCircle } from "lucide-react";
+import Swal from "sweetalert2";
+import { api, apiUrl } from "../../api";
+import { Badge, PageHeading } from "../../components/ui";
+import EventLoading from "../../components/EventLoading";
 
-export default function AdvertisingPage() { return <><PageHeading badge={<Badge tone="pink"><Megaphone size={13} /> Campaign center</Badge>} title="Advertising" description="Control promoted experiences displayed in the Vibfy mobile app."><button className="primary-button"><Plus size={18} />New campaign</button></PageHeading><div className="ad-hero"><img src="/images/experiences-hero.png" alt="" /><div className="ad-overlay"><Badge tone="pink">Featured campaign</Badge><h2>Discover Arusha after dark</h2><p>Running across Home, Explore and category placements.</p><div><span><Eye />128.4K impressions</span><span><Activity />7.8% engagement</span></div></div></div><div className="metrics-grid compact"><MetricCard icon={Eye} label="Impressions" value="384K" delta="18.2%" tone="purple" /><MetricCard icon={Activity} label="Clicks" value="24.8K" delta="9.4%" tone="pink" /><MetricCard icon={TicketCheck} label="Conversions" value="1,842" delta="12.1%" tone="amber" /></div><section className="panel"><SectionHeader title="Active campaigns" subtitle="Live placements across the app" /><div className="campaign-row"><img src="/images/afro-night.png" alt="" /><div><strong>Arusha Afro Night</strong><span>Home hero · Music category</span></div><Badge tone="green">Running</Badge><span>72.5K views</span><button><MoreHorizontal /></button></div><div className="campaign-row"><img src="/images/venue-garden.png" alt="" /><div><strong>Garden weekend offer</strong><span>Explore · Food category</span></div><Badge tone="amber">Scheduled</Badge><span>Starts Aug 8</span><button><MoreHorizontal /></button></div></section></> }
+export default function AdvertisingPage() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const backendUrl = apiUrl.replace(/\/api\/v1$/, "");
+  const mediaUrl = (url) => url?.startsWith("/storage/") ? `${backendUrl}${url}` : url;
+  useEffect(() => {
+    let active = true;
+
+    async function loadApplications() {
+      try {
+        const data = await api("/manager/advertisements");
+        if (active) setItems(data.advertisements || []);
+      } catch (problem) {
+        if (active) setError(problem.message);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadApplications();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const review = async (item, status) => {
+    const result = await Swal.fire({
+      title: `${status === "approved" ? "Approve" : "Reject"} this advert?`,
+      input: "textarea",
+      inputLabel: status === "approved" ? "Manager note (optional)" : "Reason for rejection",
+      inputPlaceholder: "Add a short note for the host…",
+      showCancelButton: true,
+      confirmButtonText: status === "approved" ? "Approve and feature" : "Reject application",
+      confirmButtonColor: status === "approved" ? "#22c55e" : "#ef4444",
+      background: "#17131b", color: "#f7f4fb",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      const response = await api(`/manager/advertisements/${item.id}`, {
+        method: "PATCH", body: JSON.stringify({ status, review_note: result.value || null }),
+      });
+      setItems((current) => current.map((entry) => entry.id === item.id ? response.advertisement : entry));
+      Swal.fire({ title: status === "approved" ? "Event is now featured" : "Application rejected", icon: "success", background: "#17131b", color: "#f7f4fb", confirmButtonColor: "#8b4ee8" });
+    } catch (e) { setError(e.message); }
+  };
+
+  return <>
+    <PageHeading badge={<Badge tone="pink"><Megaphone size={13} /> Campaign approvals</Badge>} title="Event advertising" description="Review host applications. Approved published events appear in the member app's Featured section." />
+    {error && <p className="auth-error">{error}</p>}
+    {loading ? <EventLoading label="Loading advertisement applications…" /> : (
+      <section className="panel ad-applications">
+        {items.length === 0 && <div className="venue-empty"><Megaphone /><h2>No applications yet</h2><p>Host advertising applications will appear here.</p></div>}
+        {items.map((item) => <article className="ad-application" key={item.id}>
+          <img src={mediaUrl(item.event.media?.[0]?.url) || "/images/afro-night.png"} alt="" />
+          <div className="ad-application-copy"><div><Badge tone={item.status === "approved" ? "green" : item.status === "pending" ? "amber" : "neutral"}>{item.status}</Badge></div><h2>{item.event.name}</h2><p><MapPin /> {item.event.venue?.name} · {item.requester?.name}</p><small><Clock3 /> Applied {new Date(item.created_at).toLocaleDateString()}</small>{item.review_note && <blockquote>{item.review_note}</blockquote>}</div>
+          {item.status === "pending" && <div className="ad-review-actions"><button className="secondary-button" onClick={() => review(item, "rejected")}><XCircle /> Reject</button><button className="primary-button" onClick={() => review(item, "approved")}><CheckCircle2 /> Approve & feature</button></div>}
+        </article>)}
+      </section>
+    )}
+  </>;
+}

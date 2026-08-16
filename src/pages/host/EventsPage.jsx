@@ -1,12 +1,12 @@
 import {
   CalendarDays,
   MapPin,
-  MoreHorizontal,
   Eye,
   EyeOff,
   Pencil,
   Plus,
   TicketCheck,
+  Megaphone,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge, PageHeading } from "../../components/ui";
@@ -14,6 +14,26 @@ import { api, apiUrl } from "../../api";
 import { useRouter } from "../../router";
 import Swal from "sweetalert2";
 import EventLoading from "../../components/EventLoading";
+
+const alertTheme = {
+  background: "#17111f", color: "#fbf8ff", buttonsStyling: false,
+  customClass: { popup: "vibfy-swal", title: "vibfy-swal-title", htmlContainer: "vibfy-swal-copy", actions: "vibfy-swal-actions", confirmButton: "vibfy-swal-confirm", cancelButton: "vibfy-swal-cancel", icon: "vibfy-swal-icon" },
+};
+const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
+})[character]);
+
+const successToast = (title, message) => Swal.fire({
+  ...alertTheme, toast: true, position: "top-end", icon: "success", title,
+  text: message, showConfirmButton: false, timer: 4200, timerProgressBar: true,
+  customClass: { ...alertTheme.customClass, popup: "vibfy-swal vibfy-toast" },
+});
+
+const failureAlert = (message) => Swal.fire({
+  ...alertTheme, icon: "error", title: "We couldn't complete that",
+  html: `<p>${escapeHtml(message)}</p><small>Your event has not been changed. Please try again.</small>`,
+  confirmButtonText: "Okay, try again",
+});
 
 export default function EventsPage() {
   const backendUrl = apiUrl.replace(/\/api\/v1$/, "");
@@ -27,21 +47,20 @@ export default function EventsPage() {
   const changePublication = async (event) => {
     const status = event.status === "published" ? "draft" : "published";
     const confirmation = await Swal.fire({
+      ...alertTheme,
       title:
         status === "published"
           ? "Publish this event?"
           : "Unpublish this event?",
-      text:
-        status === "published"
-          ? "It will become visible in the Vibfy member app."
-          : "It will be removed from the Vibfy member app.",
+      html: status === "published"
+        ? `<p><strong>${escapeHtml(event.name)}</strong> will become visible to Vibfy members.</p><small>You can unpublish it at any time.</small>`
+        : `<p><strong>${escapeHtml(event.name)}</strong> will be removed from the member app.</p><small>Your event information will remain safely saved.</small>`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText:
         status === "published" ? "Yes, publish" : "Yes, unpublish",
-      confirmButtonColor: "#8b4ee8",
-      background: "#17131b",
-      color: "#f7f4fb",
+      cancelButtonText: "Keep as it is",
+      reverseButtons: true,
     });
     if (!confirmation.isConfirmed) return;
     setUpdating(event.id);
@@ -54,11 +73,37 @@ export default function EventsPage() {
       setEvents((current) =>
         current.map((item) => (item.id === event.id ? result.event : item)),
       );
+      successToast(
+        status === "published" ? "Event is now live ✨" : "Event unpublished",
+        status === "published" ? `${event.name} is visible in the Vibfy app.` : `${event.name} has been removed from public listings.`,
+      );
     } catch (problem) {
-      setError(problem.message);
+      failureAlert(problem.message);
     } finally {
       setUpdating(null);
     }
+  };
+  const applyForAdvertisement = async (event) => {
+    const confirmation = await Swal.fire({
+      ...alertTheme,
+      title: event.advertisement?.status === "rejected" ? "Resubmit this advert?" : "Make this event stand out?",
+      html: `<p>Apply to feature <strong>${escapeHtml(event.name)}</strong> prominently in the Vibfy member app.</p><div class="vibfy-alert-note"><span>✦</span><div><b>Manager approval required</b><small>Our team will review your event before it becomes featured.</small></div></div>`,
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: event.advertisement?.status === "rejected" ? "Resubmit advert" : "Apply for advertising",
+      cancelButtonText: "Maybe later",
+      reverseButtons: true,
+    });
+    if (!confirmation.isConfirmed) return;
+    setUpdating(event.id);
+    try {
+      const result = await api(`/host/events/${event.id}/advertisements`, { method: "POST" });
+      setEvents((current) => current.map((item) => item.id === event.id
+        ? { ...item, advertisement: result.advertisement }
+        : item));
+      successToast("Application sent 🚀", "A Vibfy manager will review your event and notify you after approval.");
+    } catch (problem) { failureAlert(problem.message); }
+    finally { setUpdating(null); }
   };
   useEffect(() => {
     api("/host/events")
@@ -169,6 +214,21 @@ export default function EventsPage() {
                       <>Publish</>
                     )}
                   </button>
+                  {event.status === "published" && (
+                    <button
+                      onClick={() => applyForAdvertisement(event)}
+                      disabled={updating === event.id || event.advertisement?.status === "pending" || event.advertisement?.status === "approved"}
+                      title={event.advertisement?.review_note || ""}
+                    >
+                      <Megaphone /> {event.advertisement?.status === "approved"
+                        ? "Featured"
+                        : event.advertisement?.status === "pending"
+                          ? "Ad pending"
+                          : event.advertisement?.status === "rejected"
+                            ? "Reapply advert"
+                            : "Apply for advert"}
+                    </button>
+                  )}
                 </div>
               </div>
             </article>
