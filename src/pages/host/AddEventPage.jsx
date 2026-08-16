@@ -17,6 +17,11 @@ import { api, apiUrl } from "../../api";
 import { useRouter } from "../../router";
 import EventLoading from "../../components/EventLoading";
 
+const eventCategories = [
+  "Music", "Nightlife", "Food", "Safari", "Culture", "Sports",
+  "Adventure", "Wellness", "Family", "Shopping", "Festivals", "Networking",
+];
+
 const geocodingUrl =
   import.meta.env.VITE_GEOCODING_URL || "https://nominatim.openstreetmap.org";
 
@@ -156,6 +161,7 @@ export default function AddEventPage({ mode = "create" }) {
     const payload = new FormData();
     payload.append("venue_id", venueId);
     payload.append("name", fields.get("name"));
+    payload.append("category", fields.get("category"));
     payload.append("description", fields.get("description"));
     payload.append("starts_at", startDate.toISOString());
     payload.append("ends_at", endDate.toISOString());
@@ -237,6 +243,16 @@ export default function AddEventPage({ mode = "create" }) {
                 placeholder="e.g. Sunset Jazz Garden"
                 defaultValue={eventData?.name}
               />
+            </label>
+            <label>
+              Event category
+              <select name="category" required defaultValue={eventData?.category || ""}>
+                <option value="" disabled>Select the category shown in the Vibfy app</option>
+                {eventCategories.map((category) => (
+                  <option value={category} key={category}>{category}</option>
+                ))}
+              </select>
+              <small className="field-hint">This controls where members discover your event in the app.</small>
             </label>
             <label>
               Description
