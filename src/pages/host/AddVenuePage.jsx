@@ -410,7 +410,7 @@ export default function AddVenuePage({ mode = "create" }) {
               </span>
               <div>
                 <h2>Visitor details</h2>
-                <p>Add opening times, pricing and useful amenities.</p>
+                <p>Tell visitors when your venue is open and what it offers.</p>
               </div>
             </div>
             <div className="form-grid">
@@ -433,15 +433,6 @@ export default function AddVenuePage({ mode = "create" }) {
                 />
               </label>
             </div>
-            <label>
-              Typical price range
-              <input
-                name="price_range"
-                defaultValue={venue?.price_range}
-                required
-                placeholder="e.g. TSh 15,000–60,000"
-              />
-            </label>
             <fieldset>
               <legend>Amenities</legend>
               <div className="amenity-options">

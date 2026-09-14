@@ -1,3 +1,4 @@
+import BrandLogo from '../components/BrandLogo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -6,7 +7,6 @@ import {
   LockKeyhole,
   ShieldCheck,
   Store,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { api, saveSession } from "../api";
@@ -62,10 +62,7 @@ export default function LoginPage() {
           }}
           className="public-brand"
         >
-          <span>
-            <Zap size={20} fill="currentColor" />
-          </span>
-          vibfy
+          <BrandLogo />
         </a>
         <div>
           <span className="auth-quote-mark">“</span>

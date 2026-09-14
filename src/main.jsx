@@ -5,6 +5,8 @@ import "./styles.css";
 import "./venue.css";
 import "leaflet/dist/leaflet.css";
 import "react-datepicker/dist/react-datepicker.css";
+import "./refresh.css";
+import "./community/community.css";
 import { RouterProvider } from "./router.jsx";
 
 createRoot(document.getElementById("root")).render(

@@ -1,3 +1,4 @@
+import BrandLogo from '../components/BrandLogo';
 import {
   ArrowLeft,
   ArrowRight,
@@ -5,7 +6,6 @@ import {
   Eye,
   EyeOff,
   PartyPopper,
-  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { api, saveSession } from "../api";
@@ -50,10 +50,7 @@ export default function SignupPage() {
       <div className="auth-page signup">
         <aside className="auth-story signup-story">
           <a className="public-brand" href="/">
-            <span>
-              <Zap size={20} fill="currentColor" />
-            </span>
-            vibfy
+            <BrandLogo />
           </a>
         </aside>
         <main className="auth-main">
@@ -83,10 +80,7 @@ export default function SignupPage() {
           }}
           className="public-brand"
         >
-          <span>
-            <Zap size={20} fill="currentColor" />
-          </span>
-          vibfy
+          <BrandLogo />
         </a>
         <div>
           <span className="mini-eyebrow">BUILT FOR AMBITIOUS HOSTS</span>

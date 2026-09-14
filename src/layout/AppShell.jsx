@@ -1,3 +1,4 @@
+import BrandLogo from '../components/BrandLogo';
 import { useState } from "react";
 import {
   ArrowUpRight,
@@ -20,7 +21,6 @@ import {
   TrendingUp,
   Users,
   X,
-  Zap,
 } from "lucide-react";
 import { Avatar } from "../components/ui";
 import { useRouter } from "../router";
@@ -47,10 +47,7 @@ const hostNav = [
 function Logo() {
   return (
     <div className="logo">
-      <span className="logo-mark">
-        <Zap size={20} fill="currentColor" />
-      </span>
-      <span>vibfy</span>
+      <BrandLogo />
     </div>
   );
 }
@@ -119,6 +116,7 @@ export default function AppShell({ children }) {
             </a>
           ))}
           <p className="nav-label secondary">Account</p>
+          <a className="nav-link" href="/discover" onClick={event => { event.preventDefault(); navigate('/discover'); setMobileOpen(false); }}><ArrowUpRight size={19} /><span>Back to Vibfy Community</span></a>
           <button>
             <Bell size={19} />
             <span>Notifications</span>
@@ -164,6 +162,7 @@ export default function AppShell({ children }) {
             <kbd>⌘ K</kbd>
           </div>
           <div className="top-actions">
+            {!manager && <button className="primary-button" onClick={() => navigate('/host/events/new')}><CalendarDays size={16} /> Create event</button>}
             <div className="live-vibe">
               <span />
               <div>

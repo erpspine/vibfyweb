@@ -1,4 +1,5 @@
 const defaultApiUrl = "http://localhost:8000/api/v1";
+import { showFailureAlert } from "./alerts";
 export const apiUrl = (import.meta.env.VITE_API_URL || defaultApiUrl).replace(
   /\/$/,
   "",
@@ -61,13 +62,18 @@ export async function api(path, options = {}) {
       },
     });
   } catch {
-    throw new ApiError(
+    const error = new ApiError(
       "We couldn't connect to Vibfy. Check your internet connection and make sure the API server is running.",
     );
+    showFailureAlert(error.message);
+    throw error;
   }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new ApiError(errorMessage(response, body), response.status);
+    const error = new ApiError(errorMessage(response, body), response.status);
+    error.body = body;
+    showFailureAlert(error.message);
+    throw error;
   }
   return body;
 }

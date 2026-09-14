@@ -50,6 +50,7 @@ export default function ViewEventPage() {
       <button className="venue-back" onClick={() => navigate("/host/events")}>
         <ArrowLeft /> Back to events
       </button>
+      <button className="secondary-button" onClick={() => navigate(`/host/preview/${id}`)}><Eye size={17} /> Preview as guest</button>
       <div className="event-view-heading">
         <div>
           <Badge tone={event.status === "published" ? "green" : "neutral"}>

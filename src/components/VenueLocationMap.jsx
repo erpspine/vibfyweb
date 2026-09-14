@@ -1,5 +1,5 @@
 import L from "leaflet";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -29,8 +29,10 @@ function MapPosition({ position }) {
 }
 
 export default function VenueLocationMap({ position, onChange }) {
+  const [query, setQuery] = useState("");
+  const search = async (event) => { event.preventDefault(); event.stopPropagation(); if (!query.trim()) return; const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`); const results = await response.json(); if (results[0]) onChange({ lat: Number(results[0].lat), lng: Number(results[0].lon) }); };
   const point = useMemo(() => L.latLng(position.lat, position.lng), [position]);
-  return (
+  return (<div className="venue-map-wrap"><div className="venue-map-search"><input value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') search(e); }} placeholder="Search venue area or town"/><button type="button" onClick={search}>Search</button></div>
     <MapContainer
       center={point}
       zoom={14}
@@ -51,6 +53,6 @@ export default function VenueLocationMap({ position, onChange }) {
           dragend: (event) => onChange(event.target.getLatLng()),
         }}
       />
-    </MapContainer>
+    </MapContainer><p className="venue-map-selected">Selected location: {Number(position.lat).toFixed(6)}, {Number(position.lng).toFixed(6)}</p></div>
   );
 }
