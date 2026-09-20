@@ -1,0 +1,55 @@
+:root { --muted: #d0c7d6; }
+
+.manager-shell,
+.community-host-content { --muted: #51465c; }
+
+.host-dashboard { --hd-muted: #4f4d6b; }
+.community-host-content .host-list-page {
+  --list-ink: #211a2b;
+  --list-muted: #403548;
+  color: var(--list-ink);
+}
+
+.vf-landing :is(
+  .vf-hero-copy > p, .vf-hero-note, .vf-section-heading > p,
+  .vf-experience-link, .vf-tool-grid p, .vf-tool-grid article > div > span,
+  .vf-how li p, .community-page-heading > p, .community-profile > p
+) { color: #55485d; }
+
+.community-host-content :is(
+  .host-welcome p, .table-row, .table-head, .member-head,
+  .venue-form-section label, .venue-form-section legend, .modal label
+) { color: #51465c; }
+
+.community-host-content .host-list-page :is(
+  .host-list-tabs button, .host-list-search, .completion > div,
+  .completion strong, .venue-tags .badge, .venue-title p,
+  .venue-description, .event-card-body > small, .event-card-body > p,
+  .event-card-body > div:not(.event-card-actions),
+  .event-card-actions button:not(:first-child), .host-list-empty,
+  .host-list-empty button
+) {
+  color: #403548;
+  font-weight: 600;
+}
+
+.community-host-content .host-list-page .event-card-body > .event-approval-note {
+  color: #68450e;
+}
+
+.community-host-content .host-list-page .host-list-search input::placeholder {
+  color: #51445c;
+  opacity: 1;
+}
+
+.manager-shell :is(input, textarea)::placeholder,
+.community-page :is(input, textarea)::placeholder,
+.community-host-content :is(input, textarea)::placeholder {
+  color: #62566c;
+  opacity: 1;
+}
+
+.app-shell:not(.manager-shell) :is(input, textarea)::placeholder {
+  color: #c4b9cc;
+  opacity: 1;
+}

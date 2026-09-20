@@ -15,6 +15,7 @@ export function getSession() {
 
 export function saveSession(session) {
   localStorage.setItem("vibfy_session", JSON.stringify(session));
+  window.dispatchEvent(new Event('vibfy-session'));
 }
 
 export function clearSession() {
@@ -38,6 +39,8 @@ function errorMessage(response, body) {
     return body.message || "You do not have permission to access this portal.";
   if (response.status === 404)
     return "The requested service could not be found.";
+  if (response.status === 413)
+    return "This upload is too large. Please choose a smaller photo and try again.";
   if (response.status === 429)
     return "Too many attempts. Please wait a minute and try again.";
   if (response.status >= 500)
@@ -48,12 +51,13 @@ function errorMessage(response, body) {
 }
 
 export async function api(path, options = {}) {
+  const { showErrorAlert = true, ...fetchOptions } = options;
   const session = getSession();
   const isFormData = options.body instanceof FormData;
   let response;
   try {
     response = await fetch(`${apiUrl}${path}`, {
-      ...options,
+      ...fetchOptions,
       headers: {
         Accept: "application/json",
         ...(!isFormData ? { "Content-Type": "application/json" } : {}),
@@ -65,14 +69,14 @@ export async function api(path, options = {}) {
     const error = new ApiError(
       "We couldn't connect to Vibfy. Check your internet connection and make sure the API server is running.",
     );
-    showFailureAlert(error.message);
+    if (showErrorAlert) showFailureAlert(error.message);
     throw error;
   }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const error = new ApiError(errorMessage(response, body), response.status);
     error.body = body;
-    showFailureAlert(error.message);
+    if (showErrorAlert) showFailureAlert(error.message);
     throw error;
   }
   return body;

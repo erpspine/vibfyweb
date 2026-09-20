@@ -1,0 +1,18 @@
+.home-content-editor { padding: 24px; margin-bottom: 24px; }
+.home-content-editor form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-block: 20px; }
+.home-content-editor label { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.home-content-editor input, .home-content-editor select, .home-content-editor textarea { width: 100%; padding: 10px; border: 1px solid #d9cce7; border-radius: 6px; background: #fff; color: #241638; }
+.home-content-editor .content-checkbox { flex-direction: row; align-items: center; }
+.home-content-editor input[type=checkbox] { width: auto; }
+.content-editor-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.content-editor-list { display: grid; gap: 12px; margin-top: 24px; }
+.content-editor-row { display: flex; align-items: center; gap: 16px; border-top: 1px solid #e3dcec; padding-top: 16px; }
+.content-editor-row > div:first-child { flex: 1; overflow-wrap: anywhere; }
+.content-editor-row small { display: block; margin-top: 6px; }
+.home-content-cards { display: grid; gap: 20px; margin-bottom: 24px; }
+.home-content-card { overflow: hidden; border-radius: 12px; border: 1px solid #e3dcec; }
+.home-content-card img { display: block; width: 100%; max-height: 360px; object-fit: contain; }
+.home-content-card > div { padding: 24px; }
+.home-content-card h2 { margin-top: 0; overflow-wrap: anywhere; }
+.home-content-card p { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .home-content-editor form { grid-template-columns: 1fr; } .content-editor-row { align-items: flex-start; flex-direction: column; } }

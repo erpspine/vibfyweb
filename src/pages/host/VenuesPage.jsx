@@ -1,3 +1,5 @@
+import { Search } from "lucide-react";
+import "./lists.css";
 import { BadgeCheck, Image, MapPin, Plus, Store } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge, PageHeading } from "../../components/ui";
@@ -8,6 +10,8 @@ import EventLoading from "../../components/EventLoading";
 export default function VenuesPage() {
   const { navigate } = useRouter();
   const [venues, setVenues] = useState([]);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("all");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -16,8 +20,9 @@ export default function VenuesPage() {
       .catch((problem) => setError(problem.message))
       .finally(() => setLoading(false));
   }, []);
+  const visible = venues.filter(item => (filter === "all" || item.status === filter) && `${item.name} ${item.location_name || item.city || ""}`.toLowerCase().includes(query.trim().toLowerCase()));
   return (
-    <>
+    <div className="host-list-page venue-list-page">
       <PageHeading
         badge={
           <Badge tone="green">
@@ -40,6 +45,8 @@ export default function VenuesPage() {
           {error}
         </p>
       )}
+      {!loading && !error && venues.length > 0 && <div className="host-list-toolbar"><div className="host-list-tabs" aria-label="Filter venues">{[['all', 'All venues'], ['active', 'Active'], ['inactive', 'Awaiting review']].map(([value, label]) => <button key={value} className={filter === value ? "selected" : ""} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}<span>{venues.filter(item => value === "all" || item.status === value).length}</span></button>)}</div><label className="host-list-search"><Search size={17} /><input aria-label="Search venues" placeholder="Search venues…" value={query} onChange={e => setQuery(e.target.value)} /></label></div>}
+      {!loading && !error && venues.length > 0 && visible.length === 0 && <div className="host-list-empty"><Search size={28} /><h2>No matching venues</h2><p>Try a different search or status filter.</p><button onClick={() => { setQuery(""); setFilter("all"); }}>Clear filters</button></div>}
       {loading && <EventLoading label="Loading your venues…" />}
       {!loading && !error && venues.length === 0 && (
         <section className="panel venue-empty">
@@ -57,7 +64,7 @@ export default function VenuesPage() {
         </section>
       )}
       <div className="venues-list">
-        {venues.map((venue) => (
+        {visible.map((venue) => (
           <article className="venue-card" key={venue.id}>
             <div className="venue-image">
               <img
@@ -68,7 +75,7 @@ export default function VenuesPage() {
                 <BadgeCheck size={12} />{" "}
                 {venue.status === "active" ? "Active" : "Awaiting activation"}
               </Badge>
-              <button>
+              <button onClick={() => navigate(`/host/venues/edit?id=${venue.id}`)}>
                 <Image size={16} /> Cover photo
               </button>
             </div>
@@ -105,18 +112,11 @@ export default function VenuesPage() {
                     {venue.status === "active" ? "Active" : "Inactive"}
                   </strong>
                 </div>
-                <div>
-                  <i
-                    style={{
-                      width: venue.status === "active" ? "100%" : "65%",
-                    }}
-                  />
-                </div>
               </div>
             </div>
           </article>
         ))}
       </div>
-    </>
+    </div>
   );
 }

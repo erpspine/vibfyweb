@@ -456,6 +456,7 @@ export default function AddVenuePage({ mode = "create" }) {
           <section className="panel venue-cover-panel">
             <h2>Cover photo</h2>
             <p>Choose a bright landscape photo that represents your venue.</p>
+            <p>Recommended: <strong>1600 × 900 px (16:9)</strong>. JPG or PNG, up to 2 MB. Keep important details near the centre; photos may be cropped to fit different screens.</p>
             {image ? (
               <div className="venue-cover-preview">
                 <img src={image} alt="Venue preview" />

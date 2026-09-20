@@ -5,8 +5,6 @@ import {
   Eye,
   EyeOff,
   LockKeyhole,
-  ShieldCheck,
-  Store,
 } from "lucide-react";
 import { useState } from "react";
 import { api, saveSession } from "../api";
@@ -14,7 +12,7 @@ import { useRouter } from "../router";
 
 export default function LoginPage() {
   const { navigate } = useRouter();
-  const [role, setRole] = useState("host");
+  const role = "manager";
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -85,32 +83,8 @@ export default function LoginPage() {
         <form className="auth-card" onSubmit={submit}>
           <div className="auth-heading">
             <span>WELCOME BACK</span>
-            <h1>Log in to your portal</h1>
-            <p>Use your Vibfy member account and choose your workspace.</p>
-          </div>
-          <div className="role-selector">
-            <button
-              type="button"
-              className={role === "host" ? "active" : ""}
-              onClick={() => setRole("host")}
-            >
-              <Store />
-              <span>
-                <strong>Host</strong>
-                <small>Manage venues & events</small>
-              </span>
-            </button>
-            <button
-              type="button"
-              className={role === "manager" ? "active" : ""}
-              onClick={() => setRole("manager")}
-            >
-              <ShieldCheck />
-              <span>
-                <strong>Manager</strong>
-                <small>Manage the platform</small>
-              </span>
-            </button>
+            <h1>Admin login</h1>
+            <p>Sign in with your administrator account.</p>
           </div>
           <label>
             Email address
@@ -162,12 +136,6 @@ export default function LoginPage() {
               </>
             )}
           </button>
-          <p className="auth-switch">
-            New to Vibfy?{" "}
-            <button type="button" onClick={() => navigate("/signup")}>
-              Create a host account
-            </button>
-          </p>
           <div className="secure-note">
             <LockKeyhole /> Your connection is encrypted and secure
           </div>

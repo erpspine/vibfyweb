@@ -1,3 +1,4 @@
+import HomeContentEditor from './HomeContentEditor';
 import { useEffect, useState } from "react";
 import { CheckCircle2, Clock3, Megaphone, MapPin, XCircle } from "lucide-react";
 import Swal from "sweetalert2";
@@ -53,7 +54,9 @@ export default function AdvertisingPage() {
   };
 
   return <>
-    <PageHeading badge={<Badge tone="pink"><Megaphone size={13} /> Campaign approvals</Badge>} title="Event advertising" description="Review host applications. Approved published events appear in the member app's Featured section." />
+    <PageHeading badge={<Badge tone="pink"><Megaphone size={13} /> Campaign approvals</Badge>} title="Advertising" description="Manage home page content, mobile banners, and featured event applications." />
+    <HomeContentEditor />
+    <h2>Host advertising applications</h2>
     {error && <p className="auth-error">{error}</p>}
     {loading ? <EventLoading label="Loading advertisement applications…" /> : (
       <section className="panel ad-applications">
@@ -61,7 +64,7 @@ export default function AdvertisingPage() {
         {items.map((item) => <article className="ad-application" key={item.id}>
           <img src={mediaUrl(item.event.media?.[0]?.url) || "/images/afro-night.png"} alt="" />
           <div className="ad-application-copy"><div><Badge tone={item.status === "approved" ? "green" : item.status === "pending" ? "amber" : "neutral"}>{item.status}</Badge></div><h2>{item.event.name}</h2><p><MapPin /> {item.event.venue?.name} · {item.requester?.name}</p><small><Clock3 /> Applied {new Date(item.created_at).toLocaleDateString()}</small>{item.review_note && <blockquote>{item.review_note}</blockquote>}</div>
-          {item.status === "pending" && <div className="ad-review-actions"><button className="secondary-button" onClick={() => review(item, "rejected")}><XCircle /> Reject</button><button className="primary-button" onClick={() => review(item, "approved")}><CheckCircle2 /> Approve & feature</button></div>}
+          {<div className="ad-review-actions"><button className="secondary-button" onClick={() => review(item, "rejected")}><XCircle /> {item.status === "approved" ? "Stop featuring" : "Reject"}</button><button className="primary-button" onClick={() => review(item, "approved")}><CheckCircle2 /> Approve & feature</button></div>}
         </article>)}
       </section>
     )}

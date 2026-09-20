@@ -7,6 +7,7 @@ import {
   Mail,
   MoreVertical,
   ShieldCheck,
+  Search,
   Trash2,
   UserPlus,
   Users,
@@ -16,63 +17,28 @@ import { useEffect, useState } from "react";
 import { api } from "../../api";
 import Swal from "sweetalert2";
 import EventLoading from "../../components/EventLoading";
-
-const initialMembers = [
-  {
-    id: 1,
-    name: "Rafiki Garden",
-    email: "hello@rafikigarden.co.ke",
-    initials: "RG",
-    role: "Owner",
-    status: "Active",
-    color: "purple",
-  },
-  {
-    id: 2,
-    name: "Amina Kamau",
-    email: "amina@vibfy.com",
-    initials: "AK",
-    role: "Admin",
-    status: "Active",
-    color: "green",
-  },
-  {
-    id: 3,
-    name: "Brian Otieno",
-    email: "brian@vibfy.com",
-    initials: "BO",
-    role: "Viewer",
-    status: "Active",
-    color: "cyan",
-  },
-  {
-    id: 4,
-    name: "Njeri Mwangi",
-    email: "njeri@vibfy.com",
-    initials: "NM",
-    role: "Viewer",
-    status: "Pending",
-    color: "amber",
-  },
-];
+import "./team.css";
 
 const permissions = {
   Admin: [
     "Create and edit events",
     "Manage venues and media",
-    "View performance insights",
+    "View dashboard insights",
     "Invite and manage members",
   ],
   Viewer: [
     "View events and venues",
     "View media library",
-    "View performance insights",
+    "View dashboard insights",
     "Cannot make changes",
   ],
 };
 
 export default function TeamMembersPage() {
   const [members, setMembers] = useState([]);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("All");
+  const [sending, setSending] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("Admin");
@@ -133,8 +99,11 @@ export default function TeamMembersPage() {
 
   const invite = async (event) => {
     event.preventDefault();
+    if (sending) return;
+    setSending(true);
+    setError("");
     try {
-      const result = await api("/portals/host/invitations", {
+      await api("/portals/host/invitations", {
         method: "POST",
         body: JSON.stringify({
           email,
@@ -145,10 +114,13 @@ export default function TeamMembersPage() {
       setSent(true);
     } catch (problem) {
       setError(problem.message);
+    } finally {
+      setSending(false);
     }
   };
 
   const closeInvite = () => {
+    if (sending) return;
     setInviteOpen(false);
     setEmail("");
     setRole("Admin");
@@ -202,14 +174,16 @@ export default function TeamMembersPage() {
 
   if (loading) return <EventLoading label="Loading your team…" />;
 
+  const visibleMembers = members.filter(member => (filter === "All" || member.status === filter) && `${member.name} ${member.email || ""}`.toLowerCase().includes(query.trim().toLowerCase()));
+
   return (
-    <>
+    <div className="host-team-page">
       <div className="page-heading team-heading">
         <div>
           <span className="badge purple">
             <Users size={12} /> HOST TEAM
           </span>
-          <h1>Team members</h1>
+          <h1>Great experiences start with a great team.</h1>
           <p>Invite people you trust to help manage your Vibfy page.</p>
         </div>
         <button className="primary-button" onClick={() => setInviteOpen(true)}>
@@ -229,8 +203,8 @@ export default function TeamMembersPage() {
             <Users />
           </span>
           <div>
-            <small>Total members</small>
-            <strong>{members.length}</strong>
+            <small>Active members</small>
+            <strong>{members.filter(m => m.status === "Active").length}</strong>
           </div>
         </div>
         <div>
@@ -241,7 +215,7 @@ export default function TeamMembersPage() {
             <small>Administrators</small>
             <strong>
               {
-                members.filter((m) => m.role === "Admin" || m.role === "Owner")
+                members.filter((m) => m.status === "Active" && (m.role === "Admin" || m.role === "Owner"))
                   .length
               }
             </strong>
@@ -264,8 +238,12 @@ export default function TeamMembersPage() {
         <div className="section-header">
           <div>
             <h2>People with access</h2>
-            <p>Manage roles and access to Rafiki Garden.</p>
+            <p>Your people, their roles, and everything you need to work together.</p>
           </div>
+        </div>
+        <div className="team-toolbar">
+          <div className="team-filters" aria-label="Filter members">{["All", "Active", "Pending"].map(option => <button key={option} aria-pressed={filter === option} className={filter === option ? "selected" : ""} onClick={() => setFilter(option)}>{option === "All" ? "Everyone" : option}<span>{members.filter(m => option === "All" || m.status === option).length}</span></button>)}</div>
+          <label className="team-search"><Search size={17} /><input aria-label="Search team members" placeholder="Search by name or email" value={query} onChange={e => setQuery(e.target.value)} /></label>
         </div>
         <div className="members-list">
           <div className="member-row member-head">
@@ -275,7 +253,7 @@ export default function TeamMembersPage() {
             <span>Access</span>
             <span />
           </div>
-          {members.map((member) => (
+          {visibleMembers.map((member) => (
             <div className="member-row" key={member.id}>
               <div className="member-person">
                 <span className={`member-avatar ${member.color}`}>
@@ -294,6 +272,8 @@ export default function TeamMembersPage() {
                 ) : (
                   <div className="inline-select">
                     <select
+                      aria-label={`Role for ${member.name}`}
+                      disabled={member.status === "Pending"}
                       value={member.role}
                       onChange={(e) => updateRole(member.id, e.target.value)}
                     >
@@ -323,7 +303,8 @@ export default function TeamMembersPage() {
                 {member.role !== "Owner" && (
                   <>
                     <button
-                      aria-label="Member actions"
+                      aria-label={`Actions for ${member.name}`}
+                      aria-expanded={menu === member.id}
                       onClick={() =>
                         setMenu(menu === member.id ? null : member.id)
                       }
@@ -333,7 +314,7 @@ export default function TeamMembersPage() {
                     {menu === member.id && (
                       <div className="member-menu">
                         <button onClick={() => remove(member)}>
-                          <Trash2 /> Remove member
+                          <Trash2 /> {member.status === "Pending" ? "Revoke invitation" : "Remove member"}
                         </button>
                       </div>
                     )}
@@ -342,6 +323,7 @@ export default function TeamMembersPage() {
               </div>
             </div>
           ))}
+          {!visibleMembers.length && <div className="team-empty"><Users size={32} /><h3>{members.length ? "No matching members" : "Make room for your team"}</h3><p>{members.length ? "Try a different search or status filter." : "Invite someone you trust to help bring your next experience to life."}</p>{!members.length && <button className="primary-button" onClick={() => setInviteOpen(true)}><UserPlus size={17} />Invite your first member</button>}</div>}
         </div>
       </section>
 
@@ -388,7 +370,8 @@ export default function TeamMembersPage() {
           className="modal-backdrop"
           onMouseDown={(e) => e.target === e.currentTarget && closeInvite()}
         >
-          <form className="modal invite-modal" onSubmit={invite}>
+          <form className="modal invite-modal" role="dialog" aria-modal="true" aria-label="Invite a team member" onSubmit={invite}>
+            {error && <p className="auth-error" role="alert">{error}</p>}
             {sent ? (
               <div className="invite-success">
                 <span>
@@ -417,7 +400,7 @@ export default function TeamMembersPage() {
                     <h2>Invite a team member</h2>
                     <p>They must use an email connected to a Vibfy account.</p>
                   </div>
-                  <button type="button" onClick={closeInvite}>
+                  <button type="button" aria-label="Close invitation" disabled={sending} onClick={closeInvite}>
                     <X />
                   </button>
                 </div>
@@ -474,8 +457,8 @@ export default function TeamMembersPage() {
                   >
                     Cancel
                   </button>
-                  <button className="primary-button">
-                    <Mail /> Send invitation
+                  <button className="primary-button" disabled={sending}>
+                    <Mail /> {sending ? "Sending…" : "Send invitation"}
                   </button>
                 </div>
               </>
@@ -483,6 +466,6 @@ export default function TeamMembersPage() {
           </form>
         </div>
       )}
-    </>
+    </div>
   );
 }

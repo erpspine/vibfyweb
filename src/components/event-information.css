@@ -1,0 +1,15 @@
+.event-information { min-width: 0; }
+.event-information h2 { margin: 24px 0 14px; font-size: 18px; }
+.event-information-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.event-information-metrics > div { padding: 16px; border: 1px solid #e3dcec; border-radius: 8px; background: #f8f5fc; color: #241638; }
+.event-information-metrics small, .event-information-metrics strong { display: block; overflow-wrap: anywhere; }
+.event-information-metrics strong { margin-top: 8px; font-size: 22px; }
+.event-information-note { font-size: 12px; color: #716780; }
+.event-information dl { display: block; }
+.event-information dl > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid #e3dcec; }
+.event-information dt { color: #716780; }
+.event-information dd { margin: 0; overflow-wrap: anywhere; }
+.event-information-description { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.event-information-media { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.event-information-media img, .event-information-media video { width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; }
+@media (max-width: 480px) { .event-information-media { grid-template-columns: 1fr; } .event-information-metrics strong { font-size: 18px; } }

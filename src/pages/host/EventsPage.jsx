@@ -1,3 +1,5 @@
+import { Search } from "lucide-react";
+import "./lists.css";
 import {
   CalendarDays,
   MapPin,
@@ -39,6 +41,8 @@ export default function EventsPage() {
   const backendUrl = apiUrl.replace(/\/api\/v1$/, "");
   const { navigate } = useRouter();
   const [events, setEvents] = useState([]);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("all");
   const [error, setError] = useState("");
   const [updating, setUpdating] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -111,8 +115,9 @@ export default function EventsPage() {
       .catch((problem) => setError(problem.message))
       .finally(() => setLoading(false));
   }, []);
+  const visible = events.filter(item => (filter === "all" || item.status === filter) && `${item.name} ${item.location_name || item.city || ""}`.toLowerCase().includes(query.trim().toLowerCase()));
   return (
-    <>
+    <div className="host-list-page event-list-page">
       <PageHeading
         badge={
           <Badge tone="purple">
@@ -134,6 +139,8 @@ export default function EventsPage() {
           {error}
         </p>
       )}
+      {!loading && !error && events.length > 0 && <div className="host-list-toolbar"><div className="host-list-tabs" aria-label="Filter events">{[['all', 'All events'], ['published', 'Published'], ['draft', 'Drafts']].map(([value, label]) => <button key={value} className={filter === value ? "selected" : ""} aria-pressed={filter === value} onClick={() => setFilter(value)}>{label}<span>{events.filter(item => value === "all" || item.status === value).length}</span></button>)}</div><label className="host-list-search"><Search size={17} /><input aria-label="Search events" placeholder="Search events…" value={query} onChange={e => setQuery(e.target.value)} /></label></div>}
+      {!loading && !error && events.length > 0 && visible.length === 0 && <div className="host-list-empty"><Search size={28} /><h2>No matching events</h2><p>Try a different search or status filter.</p><button onClick={() => { setQuery(""); setFilter("all"); }}>Clear filters</button></div>}
       {loading && <EventLoading label="Loading your events…" />}
       {!loading && !error && events.length === 0 && (
         <section className="panel venue-empty">
@@ -150,7 +157,7 @@ export default function EventsPage() {
       )}
       {!loading && (
         <div className="event-board">
-          {events.map((event) => (
+          {visible.map((event) => (
             <article className="event-card" key={event.id}>
               <div className="event-cover">
                 {event.media?.[0]?.type === "video" ? (
@@ -179,6 +186,7 @@ export default function EventsPage() {
                   })}
                 </small>
                 <h2>{event.name}</h2>
+                {event.status === "published" && event.venue?.status !== "active" && <p className="event-approval-note">Awaiting venue approval. This event will appear on the home feed once its venue is activated, provided the event has not ended.</p>}
                 <p>
                   <MapPin /> {event.location_name}
                 </p>
@@ -187,7 +195,7 @@ export default function EventsPage() {
                     <TicketCheck />{" "}
                     {event.is_free
                       ? "Free"
-                      : `TSh ${Number(event.price).toLocaleString()}`}
+                      : `${event.currency === "TZS" || !event.currency ? "TSh" : event.currency} ${Number(event.price).toLocaleString()}`}
                   </span>
                 </div>
                 <div className="event-card-actions">
@@ -235,6 +243,6 @@ export default function EventsPage() {
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

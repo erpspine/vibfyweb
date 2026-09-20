@@ -491,6 +491,7 @@ export default function AddEventPage({ mode = "create" }) {
         <aside className="event-form-side">
           <section className="panel event-media-panel">
             <h2>Event media</h2>
+            <p>Recommended cover photo: <strong>1600 × 900 px (16:9)</strong>. Use a landscape image and keep faces and text near the centre; photos may be cropped to fit different screens.</p>
             <p>
               Upload up to 8 photos or short videos. Each file can be up to 20
               MB.

@@ -16,7 +16,8 @@ export default function VenueApprovalsPage() {
     setActivating(venue.id);
     setError("");
     try {
-      await api(`/manager/venues/${venue.id}/activate`, { method: "POST" });
+      const result = await api(`/manager/venues/${venue.id}/activate`, { method: "POST" });
+      if (result.warning) setError(result.warning);
       setVenues((current) => current.filter((item) => item.id !== venue.id));
     } catch (problem) {
       setError(problem.message);

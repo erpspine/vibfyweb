@@ -18,7 +18,6 @@ import {
   ShieldCheck,
   Sparkles,
   Store,
-  TrendingUp,
   Users,
   X,
 } from "lucide-react";
@@ -32,7 +31,6 @@ const managerNav = [
   ["Venue approvals", "/manager/venues", Store],
   ["Subscriptions", "/manager/subscriptions", CreditCard],
   ["Advertising", "/manager/advertising", Megaphone],
-  ["Analytics", "/manager/analytics", BarChart3],
   ["Users", "/manager/users", Users],
 ];
 const hostNav = [
@@ -40,8 +38,8 @@ const hostNav = [
   ["My venues", "/host/venues", Store],
   ["Events", "/host/events", CalendarDays],
   ["Media library", "/host/media", Image],
-  ["Performance", "/host/performance", TrendingUp],
   ["Team members", "/host/team", Users],
+  ["Billing", "/host/billing", CreditCard],
 ];
 
 function Logo() {
@@ -62,7 +60,7 @@ export default function AppShell({ children }) {
   const manager = path.startsWith("/manager");
   const nav = manager ? managerNav : hostNav;
   const switchRole = () => navigate(manager ? "/host" : "/manager");
-  const canSwitchRole = session?.portalAccesses?.some(
+  const canSwitchRole = manager && session?.portalAccesses?.some(
     (access) => access.portal === (manager ? "host" : "manager"),
   );
   const logout = async () => {
@@ -74,7 +72,7 @@ export default function AppShell({ children }) {
     } finally {
       clearSession();
       setLoggingOut(false);
-      navigate("/login", { replace: true });
+      navigate(manager ? "/admin/login" : "/login", { replace: true });
     }
   };
 
